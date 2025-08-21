@@ -1,0 +1,24 @@
+{
+  "name": "cognize",
+  "version": "1.0.0",
+  "description": "Answer questions related to a document using a LLM model",
+  "license": "ISC",
+  "author": "Akash Raj",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2"
+  }
+}
