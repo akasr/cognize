@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { info, error } from '../utils/logger.js';
 import { upload, processPdf } from '../services/processDocument.js';
+import splitDocument from '../services/splitDocument.js';
+import createEmbedding from '../services/createEmbedding.js';
 
 const uploadRouter = Router();
 
@@ -39,24 +41,33 @@ uploadRouter.post('/', upload.single('document'), async (request, response) => {
     }
   }
 
-  info('Processing document');
   try {
+    info('Processing document');
     const source = type === 'url' ? url : request.file;
     const document = await processPdf(type, source);
     info('Document processed successfully');
     info('Extracted text content:', document.extractedText.substring(0, 100));
     info('Document metadata:', document.metadata);
 
+    info('Splitting document into chunks');
+    const chunks = await splitDocument(document.extractedText);
+    info(`Document split into ${chunks.length} chunks`);
+
+    info('Creating embeddings');
+    const embeddings = await createEmbedding(chunks);
+    info('Embeddings created successfully\n', embeddings);
+
     return response.status(200).json({
       success: true,
       message: 'Document processed successfully',
+      status: ['pdf processed', 'chunks split', 'embeddings created'],
       data: {
         textLength: document.extractedText.length,
         metadata: document.metadata,
       },
     });
   } catch (err) {
-    error(`Error processing document: ${err.message}`);
+    error(`${err.message}`);
     return response.status(500).json({ error: err.message });
   }
 });
